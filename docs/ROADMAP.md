@@ -8,7 +8,6 @@
 - [x] Bounded little-endian RAM access API.
 - [x] Explicit V810 architectural-state structure.
 - [x] CI workflow for host compilation and tests.
-- [ ] V810 instruction interpreter — not implemented.
 - [ ] Verify CPU reset behavior and system-register definitions from primary documentation.
 
 ## v0.3b — initial memory bus
@@ -33,15 +32,16 @@
 - [x] Keep PC unchanged on failed fetches and unsupported opcodes.
 - [x] Add a signed-overflow boundary test for ADDI and correct carry expectations for negative immediates.
 - [ ] Compare behavior against an independent V810 test suite.
-- [ ] Implement branches and memory load/store instructions after confirming exact semantics.
 
-## Next sequential milestone: v0.6b
-1. Add a small, verified subset of conditional branch instructions.
-2. Test branch displacement sign extension, condition codes and taken/not-taken PC behavior.
-3. Keep exception handling and cycle timing explicitly marked incomplete.
-4. Keep host CI separate from Xbox 360 SDK/toolchain builds.
+## v0.6b — initial Format III conditional branches
+- [x] Decode Format III branch instructions and sign-extend the displacement.
+- [x] Implement the 16 branch condition codes, including unconditional BR and NOP.
+- [x] Add tests for taken BE, not-taken BNE, backward BR and NOP flag preservation.
+- [ ] Compare branch conditions and PC-relative base against an independent V810 test suite.
+- [ ] Implement memory load/store instructions in the next sequential milestone.
 
 ## Later milestones
+- Memory load/store instructions and additional V810 instruction formats.
 - PC-FX memory map and MMIO devices.
 - V810 interrupts, timers and DMA.
 - Video controllers and sound hardware.
