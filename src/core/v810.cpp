@@ -33,8 +33,7 @@ V810StepResult V810State::step(MemoryBus& bus) noexcept {
     if (opcode == 0x00U) { // MOV reg1, reg2
         const std::uint32_t value = gpr[reg1];
         if (reg2 != 0U) gpr[reg2] = value;
-        updateSz(*this, value);
-        psw &= ~FlagOV;
+        // MOV does not modify arithmetic flags on the V810.
     } else if (opcode == 0x01U) { // ADD reg1, reg2
         const std::uint32_t lhs = gpr[reg2];
         const std::uint32_t rhs = gpr[reg1];
