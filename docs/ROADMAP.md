@@ -11,9 +11,15 @@
 - [ ] V810 instruction interpreter — not implemented.
 - [ ] Verify CPU reset behavior and system-register definitions from primary documentation.
 
-## Next sequential milestone: v0.3b
-1. Add a memory-bus abstraction and address-map tests.
-2. Implement only V810 instructions whose encoding and semantics are verified against reliable technical documentation.
+## v0.3b — initial memory bus
+- [x] Add a bus layer with a configurable RAM base address.
+- [x] Reject unmapped and cross-boundary accesses without wrapping addresses.
+- [x] Add tests for region selection, translation and boundary failures.
+- [ ] Replace the test RAM window with a verified PC-FX address map.
+
+## Next sequential milestone: v0.4b
+1. Verify V810 instruction encodings and semantics against reliable technical documentation.
+2. Implement a small, testable subset of V810 instructions and flags.
 3. Add instruction-level tests before claiming CPU execution support.
 4. Keep host CI separate from Xbox 360 SDK/toolchain builds.
 
