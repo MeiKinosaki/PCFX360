@@ -11,6 +11,7 @@ Esta versão estabelece a estrutura inicial compilável do projeto, testes de me
 - Estado arquitetural e subconjunto experimental de instruções da CPU NEC V810.
 - Testes unitários básicos para memória.
 - CMake e GitHub Actions para validar a compilação em Linux.
+- Subconjunto experimental V810 com instruções imediatas e testes de overflow.
 - Roadmap documentando os subsistemas ainda pendentes.
 
 ## Compilar e testar no computador
