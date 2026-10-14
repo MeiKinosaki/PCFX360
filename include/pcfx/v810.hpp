@@ -3,7 +3,15 @@
 #include <cstdint>
 
 namespace pcfx {
-// Architectural state only; instruction execution is not implemented yet.
+class MemoryBus;
+
+enum class V810StepResult : std::uint8_t {
+    Executed,
+    Halted,
+    BusFault,
+    IllegalInstruction
+};
+
 struct V810State {
     std::array<std::uint32_t, 32> gpr{};
     std::uint32_t pc = 0;
@@ -16,5 +24,7 @@ struct V810State {
         psw = 0U;
         system_registers.fill(0U);
     }
+
+    V810StepResult step(MemoryBus& bus) noexcept;
 };
 } // namespace pcfx
