@@ -40,8 +40,14 @@
 - [ ] Compare branch conditions and PC-relative base against an independent V810 test suite.
 - [ ] Implement memory load/store instructions in the next sequential milestone.
 
+## v0.7b — initial memory load/store instructions
+- [x] Implement Format V LD.B, LD.H and LD.W reads using a signed 16-bit displacement.
+- [x] Implement Format V ST.B, ST.H and ST.W writes using a signed 16-bit displacement.
+- [x] Add tests for byte/halfword/word stores and signed byte/halfword loads.
+- [ ] Verify opcode semantics, alignment behavior and exception handling against an independent V810 reference.
+
 ## Later milestones
-- Memory load/store instructions and additional V810 instruction formats.
+- Additional V810 instruction formats and complete exception handling.
 - PC-FX memory map and MMIO devices.
 - V810 interrupts, timers and DMA.
 - Video controllers and sound hardware.
