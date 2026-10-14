@@ -74,6 +74,42 @@ V810StepResult V810State::step(MemoryBus& bus) noexcept {
         return V810StepResult::Executed;
     }
 
+    // Format V memory operations: disp16[reg1] is the effective address.
+    if (opcode == 0x30U || opcode == 0x31U || opcode == 0x33U ||
+        opcode == 0x34U || opcode == 0x35U || opcode == 0x37U) {
+        std::uint16_t immediate = 0U;
+        if (instruction_pc > 0xfffffffdU ||
+            !bus.read16(instruction_pc + 2U, immediate)) return V810StepResult::BusFault;
+        const std::uint32_t address = gpr[reg1] + signExtend16(immediate);
+        if (opcode == 0x30U) { // LD.B: sign-extend byte
+            std::uint8_t value = 0U;
+            if (!bus.read8(address, value)) return V810StepResult::BusFault;
+            const std::uint32_t result = static_cast<std::uint32_t>(
+                static_cast<std::int32_t>(static_cast<std::int8_t>(value)));
+            if (reg2 != 0U) gpr[reg2] = result;
+        } else if (opcode == 0x31U) { // LD.H: sign-extend halfword
+            std::uint16_t value = 0U;
+            if (!bus.read16(address, value)) return V810StepResult::BusFault;
+            const std::uint32_t result = signExtend16(value);
+            if (reg2 != 0U) gpr[reg2] = result;
+        } else if (opcode == 0x33U) { // LD.W
+            std::uint32_t value = 0U;
+            if (!bus.read32(address, value)) return V810StepResult::BusFault;
+            if (reg2 != 0U) gpr[reg2] = value;
+        } else if (opcode == 0x34U) { // ST.B
+            if (!bus.write8(address, static_cast<std::uint8_t>(gpr[reg2])))
+                return V810StepResult::BusFault;
+        } else if (opcode == 0x35U) { // ST.H
+            if (!bus.write16(address, static_cast<std::uint16_t>(gpr[reg2])))
+                return V810StepResult::BusFault;
+        } else { // ST.W
+            if (!bus.write32(address, gpr[reg2])) return V810StepResult::BusFault;
+        }
+        pc = instruction_pc + 4U;
+        gpr[0] = 0U;
+        return V810StepResult::Executed;
+    }
+
     // Format V is 32 bits: first halfword followed by imm16 in little-endian memory.
     if (opcode == 0x28U || opcode == 0x29U ||
         opcode == 0x2cU || opcode == 0x2fU) {
