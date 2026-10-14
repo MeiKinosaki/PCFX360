@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-add_library(pcfx_core src/core/memory.cpp)
+add_library(pcfx_core src/core/memory.cpp src/core/memory_bus.cpp)
 target_include_directories(pcfx_core PUBLIC include)
 target_compile_options(pcfx_core PRIVATE
     $<$<CXX_COMPILER_ID:GNU,Clang>:-Wall;-Wextra;-Wpedantic;-Wconversion>
