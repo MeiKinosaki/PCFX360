@@ -26,10 +26,18 @@
 - [ ] Implement more instruction formats, precise exception behavior and full PSW semantics.
 - [ ] Verify behavior against an independent V810 test suite or trusted emulator.
 
-## Next sequential milestone: v0.5b
-1. Add a verified subset of immediate arithmetic/logical instructions.
-2. Expand flags and test signed overflow/carry boundaries.
-3. Add load/store only after memory access widths and alignment behavior are confirmed.
+## v0.5b — initial Format V immediate instructions
+- [x] Decode 32-bit Format V instructions and fetch the second halfword safely.
+- [x] Implement ADDI, MOVEA, ORI and MOVHI in the current experimental core.
+- [x] Add tests for signed and zero-extended immediates and PC advancement.
+- [x] Keep PC unchanged on failed fetches and unsupported opcodes.
+- [ ] Expand boundary tests for arithmetic flags and compare against independent V810 tests.
+- [ ] Implement branches and memory load/store instructions after confirming exact semantics.
+
+## Next sequential milestone: v0.6b
+1. Add a small, verified subset of conditional branch instructions.
+2. Test branch displacement sign extension, condition codes and taken/not-taken PC behavior.
+3. Keep exception handling and cycle timing explicitly marked incomplete.
 4. Keep host CI separate from Xbox 360 SDK/toolchain builds.
 
 ## Later milestones
