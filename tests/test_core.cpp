@@ -77,17 +77,27 @@ int main() {
     cpu.psw = 0x08U;
     assert(cpu.step(bus) == pcfx::V810StepResult::Executed);
     assert(cpu.gpr[2] == 9U && cpu.pc == 0x1014U);
-    assert((cpu.psw & 0x0fU) == 0U);
+    assert((cpu.psw & 0x0fU) == 0x08U);
     cpu.gpr[1] = 10U;
     assert(cpu.step(bus) == pcfx::V810StepResult::Executed);
     assert(cpu.gpr[3] == 12U && cpu.pc == 0x1018U);
-    assert(cpu.psw == 0U);
+    assert(cpu.psw == 0x08U);
     cpu.gpr[1] = 0x100U;
     assert(cpu.step(bus) == pcfx::V810StepResult::Executed);
     assert(cpu.gpr[4] == 0x1f0U && cpu.pc == 0x101cU);
     cpu.gpr[1] = 0x1234U;
     assert(cpu.step(bus) == pcfx::V810StepResult::Executed);
     assert(cpu.gpr[5] == 0x00011234U && cpu.pc == 0x1020U);
+    assert(cpu.psw == 0x08U); // MOVHI also preserves flags.
+
+    // Signed overflow: 0x7fffffff + 1 -> 0x80000000, OV and S set.
+    assert(bus.write16(0x1020U, encode(0x29U, 2U, 1U)));
+    assert(bus.write16(0x1022U, 1U));
+    cpu.reset(0x1020U);
+    cpu.gpr[1] = 0x7fffffffU;
+    assert(cpu.step(bus) == pcfx::V810StepResult::Executed);
+    assert(cpu.gpr[2] == 0x80000000U);
+    assert((cpu.psw & 0x0fU) == 0x06U);
 
     // Failed fetch and unsupported opcode do not leave PC advanced.
     cpu.reset(0x1040U);
