@@ -38,6 +38,42 @@ V810StepResult V810State::step(MemoryBus& bus) noexcept {
     const std::uint32_t reg2 = static_cast<std::uint32_t>((instruction >> 5U) & 0x1fU);
     const std::uint32_t reg1 = static_cast<std::uint32_t>(instruction & 0x1fU);
 
+    // Format III: conditional branch, 9-bit signed displacement with bit 0 fixed to zero.
+    // The PC-relative base is the address of the branch instruction itself.
+    if ((instruction >> 13U) == 0x4U) {
+        const std::uint32_t condition = (instruction >> 9U) & 0x0fU;
+        const bool z = (psw & FlagZ) != 0U;
+        const bool s = (psw & FlagS) != 0U;
+        const bool ov = (psw & FlagOV) != 0U;
+        const bool cy = (psw & FlagCY) != 0U;
+        bool take = false;
+        switch (condition) {
+        case 0x0U: take = ov; break;                 // BV
+        case 0x1U: take = cy; break;                 // BL/BC
+        case 0x2U: take = z; break;                  // BE/BZ
+        case 0x3U: take = cy || z; break;             // BNH
+        case 0x4U: take = s; break;                  // BN
+        case 0x5U: take = true; break;               // BR
+        case 0x6U: take = s != ov; break;             // BLT
+        case 0x7U: take = (s != ov) || z; break;     // BLE
+        case 0x8U: take = !ov; break;                // BNV
+        case 0x9U: take = !cy; break;                // BNL/ BNC
+        case 0x0aU: take = !z; break;                // BNE/BNZ
+        case 0x0bU: take = !cy && !z; break;         // BH
+        case 0x0cU: take = !s; break;                // BP
+        case 0x0dU: take = false; break;             // NOP
+        case 0x0eU: take = s == ov; break;           // BGE
+        case 0x0fU: take = (s == ov) && !z; break;   // BGT
+        default: break;
+        }
+        std::int32_t displacement = static_cast<std::int32_t>(instruction & 0x01feU);
+        if ((displacement & 0x0100) != 0) displacement -= 0x0200;
+        pc = take ? instruction_pc + static_cast<std::uint32_t>(displacement)
+                  : instruction_pc + 2U;
+        gpr[0] = 0U;
+        return V810StepResult::Executed;
+    }
+
     // Format V is 32 bits: first halfword followed by imm16 in little-endian memory.
     if (opcode == 0x28U || opcode == 0x29U ||
         opcode == 0x2cU || opcode == 0x2fU) {
