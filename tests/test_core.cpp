@@ -1,4 +1,5 @@
 #include "pcfx/memory.hpp"
+#include "pcfx/memory_bus.hpp"
 #include "pcfx/v810.hpp"
 #include <cassert>
 #include <cstdint>
@@ -16,6 +17,17 @@ int main() {
     assert(!memory.read8(16U, value8));
     assert(!memory.read32(std::numeric_limits<std::uint32_t>::max(), value32));
     assert(!memory.write32(13U, value32));
+
+    pcfx::MemoryBus bus(memory, 0x1000U);
+    assert(bus.region(0x1000U) == pcfx::BusRegion::Ram);
+    assert(bus.region(0x100fU) == pcfx::BusRegion::Ram);
+    assert(bus.region(0x1010U) == pcfx::BusRegion::Unmapped);
+    assert(bus.region(0x100fU, 2U) == pcfx::BusRegion::Unmapped);
+    assert(bus.region(0x0fffU) == pcfx::BusRegion::Unmapped);
+    assert(bus.write16(0x1004U, 0xbeefU));
+    assert(bus.read16(0x1004U, value16) && value16 == 0xbeefU);
+    assert(!bus.read8(0x1010U, value8));
+    assert(!bus.write32(0x100eU, 0U));
 
     pcfx::V810State cpu;
     cpu.gpr[1] = 123U;
