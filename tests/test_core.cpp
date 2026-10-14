@@ -99,6 +99,40 @@ int main() {
     assert(cpu.gpr[2] == 0x80000000U);
     assert((cpu.psw & 0x0fU) == 0x06U);
 
+    // Format V memory operations: signed LD.B/LD.H, LD.W and ST.B/ST.H/ST.W.
+    const auto writeMemoryOp = [&](std::uint32_t address, std::uint16_t opcode,
+                                   std::uint16_t target, std::uint16_t base,
+                                   std::uint16_t displacement) {
+        assert(bus.write16(address, encode(opcode, target, base)));
+        assert(bus.write16(address + 2U, displacement));
+    };
+    writeMemoryOp(0x1010U, 0x34U, 2U, 1U, 0U); // ST.B r2, disp16[r1]
+    writeMemoryOp(0x1014U, 0x35U, 2U, 1U, 2U); // ST.H r2, disp16[r1]
+    writeMemoryOp(0x1018U, 0x37U, 2U, 1U, 4U); // ST.W r2, disp16[r1]
+    writeMemoryOp(0x101cU, 0x30U, 3U, 1U, 0U); // LD.B r3, disp16[r1]
+    writeMemoryOp(0x1020U, 0x31U, 4U, 1U, 2U); // LD.H r4, disp16[r1]
+    writeMemoryOp(0x1024U, 0x33U, 5U, 1U, 4U); // LD.W r5, disp16[r1]
+    cpu.reset(0x1010U);
+    cpu.gpr[1] = 0x1038U;
+    cpu.gpr[2] = 0x12345680U;
+    assert(cpu.step(bus) == pcfx::V810StepResult::Executed);
+    assert(cpu.pc == 0x1014U);
+    cpu.gpr[2] = 0x00008001U;
+    assert(cpu.step(bus) == pcfx::V810StepResult::Executed);
+    cpu.gpr[2] = 0x12345678U;
+    assert(cpu.step(bus) == pcfx::V810StepResult::Executed);
+    assert(bus.read8(0x1038U, value8) && value8 == 0x80U);
+    assert(bus.read16(0x103aU, value16) && value16 == 0x8001U);
+    assert(bus.read32(0x103cU, value32) && value32 == 0x12345678U);
+    cpu.reset(0x101cU);
+    cpu.gpr[1] = 0x1038U;
+    assert(cpu.step(bus) == pcfx::V810StepResult::Executed);
+    assert(cpu.gpr[3] == 0xffffff80U);
+    assert(cpu.step(bus) == pcfx::V810StepResult::Executed);
+    assert(cpu.gpr[4] == 0xffff8001U);
+    assert(cpu.step(bus) == pcfx::V810StepResult::Executed);
+    assert(cpu.gpr[5] == 0x12345678U);
+
     // Format III conditional branches: BE, BNE, BR backward, and NOP.
     const auto encodeBranch = [](std::uint16_t condition, std::int16_t displacement) {
         const auto masked = static_cast<std::uint16_t>(displacement) & 0x01feU;
