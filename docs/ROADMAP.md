@@ -31,7 +31,8 @@
 - [x] Implement ADDI, MOVEA, ORI and MOVHI in the current experimental core.
 - [x] Add tests for signed and zero-extended immediates and PC advancement.
 - [x] Keep PC unchanged on failed fetches and unsupported opcodes.
-- [ ] Expand boundary tests for arithmetic flags and compare against independent V810 tests.
+- [x] Add a signed-overflow boundary test for ADDI and correct carry expectations for negative immediates.
+- [ ] Compare behavior against an independent V810 test suite.
 - [ ] Implement branches and memory load/store instructions after confirming exact semantics.
 
 ## Next sequential milestone: v0.6b
