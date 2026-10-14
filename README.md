@@ -2,7 +2,7 @@
 
 Emulador experimental de NEC PC-FX para Xbox 360 (Xenon), com desenvolvimento incremental.
 
-## Estado atual — v0.2b
+## Estado atual — v0.4b
 
 Esta versão estabelece a estrutura inicial compilável do projeto, testes de memória e integração contínua para compilação no host. **Ainda não é um emulador jogável e não produz `default.xex`.**
 
@@ -22,7 +22,7 @@ ctest --test-dir build --output-on-failure
 ```
 
 ## Limitações conhecidas
-- Interpretador V810: ainda não implementado; a CPU não executa jogos.
+- CPU V810: execução experimental de MOV, ADD e OR em formato registrador–registrador; ainda insuficiente para executar jogos.
 - Mapa completo de memória, timers, interrupções e periféricos: pendentes.
 - VDC, vídeo, áudio, CD-ROM, BIOS e controles: pendentes.
 - Toolchain Xbox 360, integração com SDK e geração de `default.xex`: pendentes.
