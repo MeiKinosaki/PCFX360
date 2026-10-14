@@ -17,10 +17,19 @@
 - [x] Add tests for region selection, translation and boundary failures.
 - [ ] Replace the test RAM window with a verified PC-FX address map.
 
-## Next sequential milestone: v0.4b
-1. Verify V810 instruction encodings and semantics against reliable technical documentation.
-2. Implement a small, testable subset of V810 instructions and flags.
-3. Add instruction-level tests before claiming CPU execution support.
+## v0.4b — first V810 instruction execution slice
+- [x] Fetch 16-bit instruction words through the memory bus.
+- [x] Decode Format I register-register MOV, ADD and OR.
+- [x] Keep r0 hardwired to zero and advance PC for supported instructions.
+- [x] Add basic Z/S/OV/CY flag handling for this subset and instruction tests.
+- [x] Report bus faults and unsupported opcodes explicitly.
+- [ ] Implement more instruction formats, precise exception behavior and full PSW semantics.
+- [ ] Verify behavior against an independent V810 test suite or trusted emulator.
+
+## Next sequential milestone: v0.5b
+1. Add a verified subset of immediate arithmetic/logical instructions.
+2. Expand flags and test signed overflow/carry boundaries.
+3. Add load/store only after memory access widths and alignment behavior are confirmed.
 4. Keep host CI separate from Xbox 360 SDK/toolchain builds.
 
 ## Later milestones
