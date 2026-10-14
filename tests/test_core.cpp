@@ -49,6 +49,19 @@ int main() {
     assert(cpu.gpr[3] == 13U && cpu.pc == 0x1006U);
     assert(cpu.gpr[0] == 0U);
 
+    // MOV must preserve PSW flags; OR updates Z/S and clears OV, not CY.
+    assert(bus.write16(0x1008U, encode(0x00U, 4U, 1U)));
+    assert(bus.write16(0x100aU, encode(0x0cU, 4U, 1U)));
+    cpu.reset(0x1008U);
+    cpu.gpr[1] = 0x80000000U;
+    cpu.psw = 0x0fU;
+    assert(cpu.step(bus) == pcfx::V810StepResult::Executed);
+    assert(cpu.gpr[4] == 0x80000000U && cpu.psw == 0x0fU);
+    cpu.gpr[4] = 0U;
+    assert(cpu.step(bus) == pcfx::V810StepResult::Executed);
+    assert(cpu.gpr[4] == 0x80000000U);
+    assert((cpu.psw & 0x0fU) == 0x0aU); // CY preserved; OV cleared; S set; Z clear.
+
     cpu.reset(0x1040U);
     assert(cpu.step(bus) == pcfx::V810StepResult::BusFault);
     assert(cpu.pc == 0x1040U);
