@@ -40,4 +40,4 @@
 - Xbox 360 platform layer, deployment packaging and `default.xex`.
 - Compatibility and performance testing on actual hardware.
 
-A checked item means code exists; it does not imply game compatibility. No Xbox 360 binary or hardware test is claimed until the toolchain build and runtime are verified.
+A checked item means code exists; it does not imply game compatibility. The V810 subset is experimental and requires comparison against an independent test suite. No Xbox 360 binary or hardware test is claimed until the toolchain build and runtime are verified.
