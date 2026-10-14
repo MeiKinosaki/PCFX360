@@ -99,6 +99,30 @@ int main() {
     assert(cpu.gpr[2] == 0x80000000U);
     assert((cpu.psw & 0x0fU) == 0x06U);
 
+    // Format III conditional branches: BE, BNE, BR backward, and NOP.
+    const auto encodeBranch = [](std::uint16_t condition, std::int16_t displacement) {
+        const auto masked = static_cast<std::uint16_t>(displacement) & 0x01feU;
+        return static_cast<std::uint16_t>(0x8000U | (condition << 9U) | masked);
+    };
+    assert(bus.write16(0x1024U, encodeBranch(0x2U, 4)));   // BE +4
+    assert(bus.write16(0x1026U, encodeBranch(0xaU, 4)));   // BNE +4
+    assert(bus.write16(0x1028U, encodeBranch(0x5U, -4)));  // BR -4
+    assert(bus.write16(0x102aU, encodeBranch(0xdU, 0)));   // NOP
+    cpu.reset(0x1024U);
+    cpu.psw = 0x01U; // Z=1: BE taken
+    assert(cpu.step(bus) == pcfx::V810StepResult::Executed);
+    assert(cpu.pc == 0x1028U);
+    assert(cpu.step(bus) == pcfx::V810StepResult::Executed); // BR -4
+    assert(cpu.pc == 0x1024U);
+    cpu.reset(0x1026U);
+    cpu.psw = 0x01U; // Z=1: BNE not taken
+    assert(cpu.step(bus) == pcfx::V810StepResult::Executed);
+    assert(cpu.pc == 0x1028U);
+    cpu.reset(0x102aU);
+    cpu.psw = 0x0fU;
+    assert(cpu.step(bus) == pcfx::V810StepResult::Executed);
+    assert(cpu.pc == 0x102cU && cpu.psw == 0x0fU);
+
     // Failed fetch and unsupported opcode do not leave PC advanced.
     cpu.reset(0x1040U);
     assert(cpu.step(bus) == pcfx::V810StepResult::BusFault);
