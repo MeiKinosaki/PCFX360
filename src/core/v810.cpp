@@ -119,7 +119,7 @@ V810StepResult V810State::step(MemoryBus& bus) noexcept {
 
     // Format V is 32 bits: first halfword followed by imm16 in little-endian memory.
     if (opcode == 0x28U || opcode == 0x29U ||
-        opcode == 0x2cU || opcode == 0x2fU) {
+        opcode == 0x2cU || opcode == 0x2dU || opcode == 0x2eU || opcode == 0x2fU) {
         std::uint16_t immediate = 0U;
         if (instruction_pc > 0xfffffffdU ||
             !bus.read16(instruction_pc + 2U, immediate)) return V810StepResult::BusFault;
@@ -137,8 +137,11 @@ V810StepResult V810State::step(MemoryBus& bus) noexcept {
             pc = instruction_pc + 4U;
             gpr[0] = 0U;
             return V810StepResult::Executed;
-        } else if (opcode == 0x2cU) { // ORI imm16, reg1, reg2; zero-extended immediate
-            result = source | static_cast<std::uint32_t>(immediate);
+        } else if (opcode == 0x2cU || opcode == 0x2dU || opcode == 0x2eU) {
+            // ORI, ANDI and XORI use a zero-extended 16-bit immediate.
+            if (opcode == 0x2cU) result = source | static_cast<std::uint32_t>(immediate);
+            else if (opcode == 0x2dU) result = source & static_cast<std::uint32_t>(immediate);
+            else result = source ^ static_cast<std::uint32_t>(immediate);
             if (reg2 != 0U) gpr[reg2] = result;
             updateSz(*this, result);
             psw &= ~FlagOV;
