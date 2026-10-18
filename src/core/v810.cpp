@@ -164,6 +164,21 @@ V810StepResult V810State::step(MemoryBus& bus) noexcept {
         if (reg2 != 0U) gpr[reg2] = result;
         updateSz(*this, result);
         psw &= ~FlagOV;
+    } else if (opcode == 0x0dU) { // AND reg1, reg2
+        const std::uint32_t result = gpr[reg2] & gpr[reg1];
+        if (reg2 != 0U) gpr[reg2] = result;
+        updateSz(*this, result);
+        psw &= ~FlagOV;
+    } else if (opcode == 0x0eU) { // XOR reg1, reg2
+        const std::uint32_t result = gpr[reg2] ^ gpr[reg1];
+        if (reg2 != 0U) gpr[reg2] = result;
+        updateSz(*this, result);
+        psw &= ~FlagOV;
+    } else if (opcode == 0x0fU) { // NOT reg1, reg2
+        const std::uint32_t result = ~gpr[reg1];
+        if (reg2 != 0U) gpr[reg2] = result;
+        updateSz(*this, result);
+        psw &= ~FlagOV;
     } else {
         pc = instruction_pc;
         return V810StepResult::IllegalInstruction;
