@@ -161,6 +161,18 @@ int main() {
     assert(cpu.step(bus) == pcfx::V810StepResult::Executed);
     assert(cpu.gpr[8] == 0xf00ff00fU && cpu.pc == 0x1036U);
 
+    // Format V immediate logical operations: ANDI and XORI.
+    assert(bus.write16(0x1036U, encode(0x2dU, 10U, 1U)));
+    assert(bus.write16(0x1038U, 0x00f0U));
+    assert(bus.write16(0x103aU, encode(0x2eU, 11U, 1U)));
+    assert(bus.write16(0x103cU, 0x00ffU));
+    cpu.reset(0x1036U);
+    cpu.gpr[1] = 0x1234U;
+    assert(cpu.step(bus) == pcfx::V810StepResult::Executed);
+    assert(cpu.gpr[10] == 0x0030U && cpu.pc == 0x103aU);
+    assert(cpu.step(bus) == pcfx::V810StepResult::Executed);
+    assert(cpu.gpr[11] == 0x12cbU && cpu.pc == 0x103eU);
+
     // Format III conditional branches: BE, BNE, BR backward, and NOP.
     const auto encodeBranch = [](std::uint16_t condition, std::int16_t displacement) {
         const auto masked = static_cast<std::uint16_t>(displacement) & 0x01feU;
