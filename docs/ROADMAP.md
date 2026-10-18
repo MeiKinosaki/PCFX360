@@ -46,8 +46,14 @@
 - [x] Add tests for byte/halfword/word stores and signed byte/halfword loads.
 - [ ] Verify opcode semantics, alignment behavior and exception handling against an independent V810 reference.
 
+## v0.8b — expanded logical instruction subset
+- [x] Add Format I AND, XOR and NOT operations.
+- [x] Update Z/S flags and clear OV for these logical operations in the current model.
+- [x] Add basic instruction/result/PC tests for the new operations.
+- [ ] Verify exact opcode and PSW semantics against a trusted V810 reference.
+
 ## Later milestones
-- Additional V810 instruction formats and complete exception handling.
+- Additional V810 arithmetic/logical instruction formats and complete exception handling.
 - PC-FX memory map and MMIO devices.
 - V810 interrupts, timers and DMA.
 - Video controllers and sound hardware.
