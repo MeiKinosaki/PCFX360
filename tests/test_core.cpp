@@ -133,6 +133,19 @@ int main() {
     assert(cpu.step(bus) == pcfx::V810StepResult::Executed);
     assert(cpu.gpr[5] == 0x12345678U);
 
+    // SUB writes the difference; CMP updates flags without changing its destination.
+    assert(bus.write16(0x102cU, encode(0x03U, 9U, 1U)));
+    assert(bus.write16(0x102eU, encode(0x05U, 9U, 1U)));
+    cpu.reset(0x102cU);
+    cpu.gpr[1] = 3U;
+    cpu.gpr[9] = 10U;
+    assert(cpu.step(bus) == pcfx::V810StepResult::Executed);
+    assert(cpu.gpr[9] == 7U && cpu.pc == 0x102eU);
+    cpu.gpr[9] = 3U;
+    assert(cpu.step(bus) == pcfx::V810StepResult::Executed);
+    assert(cpu.gpr[9] == 3U && cpu.pc == 0x1030U);
+    assert((cpu.psw & 0x0fU) == 0x01U); // equal comparison sets Z
+
     // Additional logical instructions: AND, XOR and NOT.
     assert(bus.write16(0x1030U, encode(0x0dU, 6U, 1U)));
     assert(bus.write16(0x1032U, encode(0x0eU, 7U, 1U)));
