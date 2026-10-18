@@ -48,8 +48,9 @@
 
 ## v0.8b — expanded logical instruction subset
 - [x] Add Format I SUB, CMP, AND, XOR and NOT operations.
+- [x] Add Format V ANDI and XORI immediate operations.
 - [x] Update Z/S flags and clear OV for these logical operations in the current model.
-- [x] Add basic instruction/result/PC tests for the new operations, including CMP preserving its destination register.
+- [x] Add basic instruction/result/PC tests for the new operations, including CMP preserving its destination register and ANDI/XORI immediate results.
 - [ ] Verify exact opcode and PSW semantics against a trusted V810 reference.
 
 ## Later milestones
