@@ -27,6 +27,13 @@ void setAddFlags(V810State& cpu, std::uint32_t lhs, std::uint32_t rhs,
     if (((~(lhs ^ rhs) & (lhs ^ result)) & SignBit) != 0U) cpu.psw |= FlagOV;
     updateSz(cpu, result);
 }
+void setSubFlags(V810State& cpu, std::uint32_t lhs, std::uint32_t rhs,
+                 std::uint32_t result) noexcept {
+    cpu.psw &= ~ArithmeticFlags;
+    if (lhs < rhs) cpu.psw |= FlagCY;
+    if ((((lhs ^ rhs) & (lhs ^ result)) & SignBit) != 0U) cpu.psw |= FlagOV;
+    updateSz(cpu, result);
+}
 } // namespace
 
 V810StepResult V810State::step(MemoryBus& bus) noexcept {
@@ -159,6 +166,16 @@ V810StepResult V810State::step(MemoryBus& bus) noexcept {
         const std::uint32_t result = static_cast<std::uint32_t>(wide);
         if (reg2 != 0U) gpr[reg2] = result;
         setAddFlags(*this, lhs, rhs, result, wide);
+    } else if (opcode == 0x03U) { // SUB reg1, reg2
+        const std::uint32_t lhs = gpr[reg2];
+        const std::uint32_t rhs = gpr[reg1];
+        const std::uint32_t result = lhs - rhs;
+        if (reg2 != 0U) gpr[reg2] = result;
+        setSubFlags(*this, lhs, rhs, result);
+    } else if (opcode == 0x05U) { // CMP reg1, reg2; flags only
+        const std::uint32_t lhs = gpr[reg2];
+        const std::uint32_t rhs = gpr[reg1];
+        setSubFlags(*this, lhs, rhs, lhs - rhs);
     } else if (opcode == 0x0cU) { // OR reg1, reg2
         const std::uint32_t result = gpr[reg2] | gpr[reg1];
         if (reg2 != 0U) gpr[reg2] = result;
