@@ -133,6 +133,21 @@ int main() {
     assert(cpu.step(bus) == pcfx::V810StepResult::Executed);
     assert(cpu.gpr[5] == 0x12345678U);
 
+    // Additional logical instructions: AND, XOR and NOT.
+    assert(bus.write16(0x1030U, encode(0x0dU, 6U, 1U)));
+    assert(bus.write16(0x1032U, encode(0x0eU, 7U, 1U)));
+    assert(bus.write16(0x1034U, encode(0x0fU, 8U, 1U)));
+    cpu.reset(0x1030U);
+    cpu.gpr[1] = 0x0ff00ff0U;
+    cpu.gpr[6] = 0x00ffff00U;
+    cpu.gpr[7] = 0xffffffffU;
+    assert(cpu.step(bus) == pcfx::V810StepResult::Executed);
+    assert(cpu.gpr[6] == 0x00f00f00U && cpu.pc == 0x1032U);
+    assert(cpu.step(bus) == pcfx::V810StepResult::Executed);
+    assert(cpu.gpr[7] == 0xf00ff00fU && cpu.pc == 0x1034U);
+    assert(cpu.step(bus) == pcfx::V810StepResult::Executed);
+    assert(cpu.gpr[8] == 0xf00ff00fU && cpu.pc == 0x1036U);
+
     // Format III conditional branches: BE, BNE, BR backward, and NOP.
     const auto encodeBranch = [](std::uint16_t condition, std::int16_t displacement) {
         const auto masked = static_cast<std::uint16_t>(displacement) & 0x01feU;
