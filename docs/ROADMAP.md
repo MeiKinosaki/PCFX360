@@ -47,9 +47,9 @@
 - [ ] Verify opcode semantics, alignment behavior and exception handling against an independent V810 reference.
 
 ## v0.8b — expanded logical instruction subset
-- [x] Add Format I AND, XOR and NOT operations.
+- [x] Add Format I SUB, CMP, AND, XOR and NOT operations.
 - [x] Update Z/S flags and clear OV for these logical operations in the current model.
-- [x] Add basic instruction/result/PC tests for the new operations.
+- [x] Add basic instruction/result/PC tests for the new operations, including CMP preserving its destination register.
 - [ ] Verify exact opcode and PSW semantics against a trusted V810 reference.
 
 ## Later milestones
