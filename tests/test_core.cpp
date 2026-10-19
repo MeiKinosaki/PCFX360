@@ -209,7 +209,7 @@ int main() {
     cpu.gpr[1] = 1U;
     cpu.gpr[13] = 0x80000001U;
     assert(cpu.step(bus) == pcfx::V810StepResult::Executed);
-    assert(cpu.gpr[13] == 0x40000000U && (cpu.psw & 0x0fU) == 0x0aU);
+    assert(cpu.gpr[13] == 0x40000000U && (cpu.psw & 0x0fU) == 0x08U);
     cpu.gpr[1] = 1U;
     cpu.gpr[14] = 0x80000001U;
     assert(cpu.step(bus) == pcfx::V810StepResult::Executed);
