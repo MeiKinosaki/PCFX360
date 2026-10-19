@@ -53,6 +53,13 @@
 - [x] Add basic instruction/result/PC tests for the new operations, including CMP preserving its destination register and ANDI/XORI immediate results.
 - [ ] Verify exact opcode and PSW semantics against a trusted V810 reference.
 
+## v0.9b — register shift operations
+- [x] Implement SHL, SHR and SAR using the low five bits of the shift-count register.
+- [x] Update Z/S/CY and clear OV for nonzero shifts in the experimental PSW model.
+- [x] Use portable sign-fill logic for arithmetic right shift.
+- [x] Add basic result, PC and flag tests for the three shift operations.
+- [ ] Verify exact opcode, shift-count and PSW behavior against an independent V810 reference.
+
 ## Later milestones
 - Additional V810 arithmetic/logical instruction formats and complete exception handling.
 - PC-FX memory map and MMIO devices.
