@@ -196,8 +196,10 @@ V810StepResult V810State::step(MemoryBus& bus) noexcept {
             } else {
                 if (((value >> (count - 1U)) & 1U) != 0U) psw |= FlagCY;
                 else psw &= ~FlagCY;
-                result = static_cast<std::uint32_t>(
-                    static_cast<std::int32_t>(value) >> count);
+                result = value >> count;
+                if ((value & SignBit) != 0U) {
+                    result |= (0xffffffffU << (32U - count));
+                }
             }
         }
         if (reg2 != 0U) gpr[reg2] = result;
