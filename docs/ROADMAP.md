@@ -60,6 +60,14 @@
 - [x] Add basic result, PC and flag tests for the three shift operations.
 - [ ] Verify exact opcode, shift-count and PSW behavior against an independent V810 reference.
 
+## v1.0b — CPU boundary and invariant tests
+- [x] Add regression coverage that register r0 remains zero after a write-target instruction.
+- [x] Add tests for a truncated 32-bit instruction fetch and unmapped data read returning BusFault without advancing PC.
+- [x] Add a zero-count shift regression test for the current experimental flag model.
+- [ ] Run host build and CTest in GitHub Actions and resolve any failures before treating this milestone as validated.
+- [ ] Cross-check instruction encodings, PSW bits, alignment and exception semantics against an independent V810 reference.
+- [ ] Do not mark Xbox 360 support or default.xex complete until a real toolchain build is confirmed.
+
 ## Later milestones
 - Additional V810 arithmetic/logical instruction formats and complete exception handling.
 - PC-FX memory map and MMIO devices.
