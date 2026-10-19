@@ -223,5 +223,34 @@ int main() {
     cpu.reset(0x1000U);
     assert(cpu.step(bus) == pcfx::V810StepResult::IllegalInstruction);
     assert(cpu.pc == 0x1000U);
+
+    // v1.0b edge cases: r0 stays zero; bus faults must not advance PC.
+    assert(bus.write16(0x1000U, encode(0x00U, 0U, 1U))); // MOV r1, r0
+    cpu.reset(0x1000U);
+    cpu.gpr[1] = 0xabcdef01U;
+    assert(cpu.step(bus) == pcfx::V810StepResult::Executed);
+    assert(cpu.gpr[0] == 0U && cpu.pc == 0x1002U);
+
+    assert(bus.write16(0x103eU, encode(0x29U, 2U, 1U))); // ADDI missing imm16
+    cpu.reset(0x103eU);
+    cpu.gpr[1] = 7U;
+    assert(cpu.step(bus) == pcfx::V810StepResult::BusFault);
+    assert(cpu.pc == 0x103eU && cpu.gpr[1] == 7U);
+
+    writeMemoryOp(0x1038U, 0x33U, 2U, 1U, 0U); // LD.W unmapped
+    cpu.reset(0x1038U);
+    cpu.gpr[1] = 0x2000U;
+    assert(cpu.step(bus) == pcfx::V810StepResult::BusFault);
+    assert(cpu.pc == 0x1038U);
+
+    // Zero-count shift updates Z/S and preserves CY in this experimental model.
+    assert(bus.write16(0x1002U, encode(0x08U, 12U, 1U)));
+    cpu.reset(0x1002U);
+    cpu.gpr[1] = 0U;
+    cpu.gpr[12] = 0U;
+    cpu.psw = 0x08U;
+    assert(cpu.step(bus) == pcfx::V810StepResult::Executed);
+    assert(cpu.gpr[12] == 0U && (cpu.psw & 0x09U) == 0x09U);
+
     return 0;
 }
