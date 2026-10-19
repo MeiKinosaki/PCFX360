@@ -197,6 +197,24 @@ int main() {
     assert(cpu.step(bus) == pcfx::V810StepResult::Executed);
     assert(cpu.pc == 0x102cU && cpu.psw == 0x0fU);
 
+    // SHL, SHR and SAR register shifts; count comes from the low five bits.
+    assert(bus.write16(0x1000U, encode(0x08U, 12U, 1U))); // SHL r1, r12
+    assert(bus.write16(0x1002U, encode(0x09U, 13U, 1U))); // SHR r1, r13
+    assert(bus.write16(0x1004U, encode(0x0bU, 14U, 1U))); // SAR r1, r14
+    cpu.reset(0x1000U);
+    cpu.gpr[1] = 1U;
+    cpu.gpr[12] = 0x80000001U;
+    assert(cpu.step(bus) == pcfx::V810StepResult::Executed);
+    assert(cpu.gpr[12] == 2U && (cpu.psw & 0x0fU) == 0x08U);
+    cpu.gpr[1] = 1U;
+    cpu.gpr[13] = 0x80000001U;
+    assert(cpu.step(bus) == pcfx::V810StepResult::Executed);
+    assert(cpu.gpr[13] == 0x40000000U && (cpu.psw & 0x0fU) == 0x0aU);
+    cpu.gpr[1] = 1U;
+    cpu.gpr[14] = 0x80000001U;
+    assert(cpu.step(bus) == pcfx::V810StepResult::Executed);
+    assert(cpu.gpr[14] == 0xc0000000U && (cpu.psw & 0x0fU) == 0x0aU);
+
     // Failed fetch and unsupported opcode do not leave PC advanced.
     cpu.reset(0x1040U);
     assert(cpu.step(bus) == pcfx::V810StepResult::BusFault);
