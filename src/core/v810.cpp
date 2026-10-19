@@ -179,6 +179,30 @@ V810StepResult V810State::step(MemoryBus& bus) noexcept {
         const std::uint32_t lhs = gpr[reg2];
         const std::uint32_t rhs = gpr[reg1];
         setSubFlags(*this, lhs, rhs, lhs - rhs);
+    } else if (opcode == 0x08U || opcode == 0x09U || opcode == 0x0bU) {
+        // SHL, SHR and SAR; shift count is the low five bits of reg1.
+        const std::uint32_t value = gpr[reg2];
+        const std::uint32_t count = gpr[reg1] & 0x1fU;
+        std::uint32_t result = value;
+        if (count != 0U) {
+            if (opcode == 0x08U) {
+                if (((value >> (32U - count)) & 1U) != 0U) psw |= FlagCY;
+                else psw &= ~FlagCY;
+                result = value << count;
+            } else if (opcode == 0x09U) {
+                if (((value >> (count - 1U)) & 1U) != 0U) psw |= FlagCY;
+                else psw &= ~FlagCY;
+                result = value >> count;
+            } else {
+                if (((value >> (count - 1U)) & 1U) != 0U) psw |= FlagCY;
+                else psw &= ~FlagCY;
+                result = static_cast<std::uint32_t>(
+                    static_cast<std::int32_t>(value) >> count);
+            }
+        }
+        if (reg2 != 0U) gpr[reg2] = result;
+        updateSz(*this, result);
+        psw &= ~FlagOV;
     } else if (opcode == 0x0cU) { // OR reg1, reg2
         const std::uint32_t result = gpr[reg2] | gpr[reg1];
         if (reg2 != 0U) gpr[reg2] = result;
