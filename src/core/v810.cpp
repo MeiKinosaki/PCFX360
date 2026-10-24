@@ -18,7 +18,16 @@ void updateSz(V810State& cpu, std::uint32_t value) noexcept {
     if ((value & SignBit) != 0U) cpu.psw |= FlagS;
 }
 std::uint32_t signExtend16(std::uint16_t value) noexcept {
-    return static_cast<std::uint32_t>(static_cast<std::int32_t>(static_cast<std::int16_t>(value)));
+    // Express sign extension in unsigned arithmetic to avoid implementation-defined
+    // narrowing conversions for values whose sign bit is set.
+    return (value & 0x8000U) != 0U
+        ? (0xffff0000U | static_cast<std::uint32_t>(value))
+        : static_cast<std::uint32_t>(value);
+}
+std::uint32_t signExtend8(std::uint8_t value) noexcept {
+    return (value & 0x80U) != 0U
+        ? (0xffffff00U | static_cast<std::uint32_t>(value))
+        : static_cast<std::uint32_t>(value);
 }
 void setAddFlags(V810State& cpu, std::uint32_t lhs, std::uint32_t rhs,
                  std::uint32_t result, std::uint64_t wide) noexcept {
@@ -91,8 +100,7 @@ V810StepResult V810State::step(MemoryBus& bus) noexcept {
         if (opcode == 0x30U) { // LD.B: sign-extend byte
             std::uint8_t value = 0U;
             if (!bus.read8(address, value)) return V810StepResult::BusFault;
-            const std::uint32_t result = static_cast<std::uint32_t>(
-                static_cast<std::int32_t>(static_cast<std::int8_t>(value)));
+            const std::uint32_t result = signExtend8(value);
             if (reg2 != 0U) gpr[reg2] = result;
         } else if (opcode == 0x31U) { // LD.H: sign-extend halfword
             std::uint16_t value = 0U;
