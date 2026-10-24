@@ -5,7 +5,7 @@ Este painel separa código existente, validação pendente e funcionalidades fut
 ## Resumo honesto
 
 - Versão registrada: v1.0b.
-- Core C++ de host: estrutura existente; execução de build/testes após as últimas alterações ainda não confirmada.
+- Core C++ de host: estrutura existente; workflow atualizado para matriz GCC/Clang e sanitizers; resultados de execução ainda não confirmados.
 - CPU V810: subconjunto experimental; não comparar com CPU completa.
 - Xbox 360: toolchain e compilação-alvo não comprovadas.
 - Artefato `default.xex`: não confirmado/existente.
@@ -50,7 +50,7 @@ A solicitação de 1.000 etapas é organizada em 10 frentes com 100 microetapas 
 
 ## Portões obrigatórios de validação
 
-- [ ] GitHub Actions compila e executa CTest com sucesso no host.
+- [ ] GitHub Actions compila e executa CTest com sucesso no host (workflow agora usa GCC, Clang e uma execução com ASan/UBSan).
 - [ ] ISA/flags/branches são comparados com documentação técnica ou implementação de referência confiável.
 - [ ] Mapa de memória do PC-FX é sustentado por documentação.
 - [ ] Nenhum subsistema é declarado concluído apenas porque existe um arquivo ou teste escrito.
@@ -59,6 +59,14 @@ A solicitação de 1.000 etapas é organizada em 10 frentes com 100 microetapas 
 - [ ] `default.xex` é produzido e validado.
 - [ ] Inicialização é demonstrada em hardware Xbox 360 RGH.
 - [ ] BIOS/jogo são testados somente com arquivos obtidos legalmente pelo usuário.
+
+## Avanço paralelo registrado nesta rodada
+
+- [x] Ampliar o workflow de host para GCC e Clang.
+- [x] Adicionar job separado com AddressSanitizer e UndefinedBehaviorSanitizer.
+- [x] Aplicar avisos de compilador também ao executável de testes.
+- [x] Adicionar regressões de barramento em endereços próximos de `0xffffffff` para verificar limites e evitar wraparound.
+- [ ] Confirmar execução dos três jobs e corrigir falhas observadas.
 
 ## Próximo avanço recomendado
 
