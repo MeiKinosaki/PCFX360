@@ -8,6 +8,8 @@ MemoryBus::MemoryBus(Memory& ram, std::uint32_t ram_base) noexcept
 bool MemoryBus::translate(std::uint32_t address, std::uint32_t width,
                           std::uint32_t& offset) const noexcept {
     if (width == 0U || address < ram_base_) return false;
+    // Reject accesses that would wrap the 32-bit physical address space.
+    if (static_cast<std::uint64_t>(address) + width > 0x100000000ULL) return false;
     const std::uint32_t relative = address - ram_base_;
     if (static_cast<std::uint64_t>(relative) + width >
         static_cast<std::uint64_t>(ram_.size())) return false;
