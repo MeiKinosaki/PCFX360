@@ -263,5 +263,24 @@ int main() {
     assert(high_bus.write8(0xffffffffU, 0x5aU));
     assert(high_bus.read8(0xffffffffU, value8) && value8 == 0x5aU);
 
+
+    // v1.0b follow-up: signed loads cover positive edge values and failed loads
+    // must not overwrite the destination register.
+    assert(bus.write8(0x1038U, 0x7fU));
+    assert(bus.write16(0x103aU, 0x7fffU));
+    writeMemoryOp(0x1020U, 0x30U, 10U, 1U, 0U); // LD.B +127
+    writeMemoryOp(0x1024U, 0x31U, 11U, 1U, 2U); // LD.H +32767
+    writeMemoryOp(0x1028U, 0x33U, 15U, 1U, 0U); // LD.W unmapped
+    cpu.reset(0x1020U);
+    cpu.gpr[1] = 0x1038U;
+    assert(cpu.step(bus) == pcfx::V810StepResult::Executed);
+    assert(cpu.gpr[10] == 0x7fU && cpu.pc == 0x1024U);
+    assert(cpu.step(bus) == pcfx::V810StepResult::Executed);
+    assert(cpu.gpr[11] == 0x7fffU && cpu.pc == 0x1028U);
+    cpu.gpr[1] = 0x2000U;
+    cpu.gpr[15] = 0xdeadbeefU;
+    assert(cpu.step(bus) == pcfx::V810StepResult::BusFault);
+    assert(cpu.gpr[15] == 0xdeadbeefU && cpu.pc == 0x1028U);
+
     return 0;
 }
