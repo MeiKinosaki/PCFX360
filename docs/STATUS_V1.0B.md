@@ -66,7 +66,17 @@ A solicitação de 1.000 etapas é organizada em 10 frentes com 100 microetapas 
 - [x] Adicionar job separado com AddressSanitizer e UndefinedBehaviorSanitizer.
 - [x] Aplicar avisos de compilador também ao executável de testes.
 - [x] Adicionar regressões de barramento em endereços próximos de `0xffffffff` para verificar limites e evitar wraparound.
+- [x] Corrigir o barramento para rejeitar acessos que cruzem o limite do espaço de endereços de 32 bits.
 - [ ] Confirmar execução dos três jobs e corrigir falhas observadas.
+
+## Commits adicionais desta rodada
+
+- `d6ccdeef`: CI ampliado para GCC, Clang e sanitizers.
+- `1d4aa90c`: novos testes de limite do barramento.
+- `43b051f6`: avisos de compilação também no alvo de testes.
+- `9e233c15`: correção de wraparound no barramento de 32 bits.
+
+O estado do CI consultado não apresentou verificações concluídas; portanto, nenhuma execução é declarada aprovada.
 
 ## Próximo avanço recomendado
 
