@@ -252,5 +252,16 @@ int main() {
     assert(cpu.step(bus) == pcfx::V810StepResult::Executed);
     assert(cpu.gpr[12] == 0U && (cpu.psw & 0x09U) == 0x09U);
 
+
+    // High-address bus boundary: address arithmetic must not wrap past 0xffffffff.
+    pcfx::Memory high_memory(32U);
+    pcfx::MemoryBus high_bus(high_memory, 0xfffffff0U);
+    assert(high_bus.region(0xfffffff0U, 16U) == pcfx::BusRegion::Ram);
+    assert(high_bus.region(0xffffffffU, 1U) == pcfx::BusRegion::Ram);
+    assert(high_bus.region(0xffffffffU, 2U) == pcfx::BusRegion::Unmapped);
+    assert(high_bus.region(0xffffffeFU, 1U) == pcfx::BusRegion::Unmapped);
+    assert(high_bus.write8(0xffffffffU, 0x5aU));
+    assert(high_bus.read8(0xffffffffU, value8) && value8 == 0x5aU);
+
     return 0;
 }
