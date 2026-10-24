@@ -15,5 +15,8 @@ include(CTest)
 if(BUILD_TESTING)
     add_executable(pcfx_tests tests/test_core.cpp)
     target_link_libraries(pcfx_tests PRIVATE pcfx_core)
+    target_compile_options(pcfx_tests PRIVATE
+        $<$<CXX_COMPILER_ID:GNU,Clang>:-Wall;-Wextra;-Wpedantic;-Wconversion>
+    )
     add_test(NAME pcfx_core_tests COMMAND pcfx_tests)
 endif()
