@@ -78,3 +78,11 @@
 - Compatibility and performance testing on actual hardware.
 
 A checked item means code exists; it does not imply game compatibility. The V810 subset is experimental and requires comparison against an independent test suite. No Xbox 360 binary or hardware test is claimed until the toolchain build and runtime are verified.
+
+
+## v1.0b — validação paralela adicional
+- [x] Expandir CI de host para GCC e Clang.
+- [x] Adicionar job de sanitizers ASan/UBSan.
+- [x] Aplicar avisos de compilador ao alvo de testes.
+- [x] Testar limites do barramento em endereços próximos do limite de 32 bits.
+- [ ] Aguardar resultados do CI; alterações de teste não equivalem a testes aprovados.
